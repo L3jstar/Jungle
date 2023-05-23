@@ -1,11 +1,5 @@
-import controller.GameController;
-import model.Chessboard;
-import model.Constant;
-import view.AudioPlayer;
-import view.ChessGameFrame;
 import view.Music;
 import view.StartFrame;
-
 import javax.swing.*;
 
 public class Main {
@@ -20,11 +14,7 @@ public class Main {
             String filepath = "src/music/Wind Song.wav";
             Music musicObject = new Music();
             musicObject.playMusic(filepath);//这个可以用，放在main的中间（Music)
-
-
         });
-//        final AudioPlayer audioPlayer=new AudioPlayer();
-//        audioPlayer.play(Constant.filepath);//这个可以用，放在main的后边(AudioPlayer)
 
     }
 }
