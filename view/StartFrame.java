@@ -16,22 +16,24 @@ public class StartFrame extends JFrame{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(null);
 
-        JPanel panel=(JPanel) getContentPane();
+        JPanel panel = new JPanel(null);
+        setContentPane(panel);
 
-        Image picture = new ImageIcon("src/picture/startFrame.jpg").getImage();
-        picture = picture.getScaledInstance(400, 500,Image.SCALE_DEFAULT);
+        Image picture = new ImageIcon("src/picture/startFrame.gif").getImage();
+        picture = picture.getScaledInstance(400, 500, Image.SCALE_DEFAULT);
         ImageIcon icon = new ImageIcon(picture);
         JLabel start = new JLabel(icon);
-        start.setSize(400, 500);
-        start.setLocation(0, 0);
-        add(start);
+        start.setBounds(0, 0, 400, 500);
+        panel.add(start);
 
-
-        j1.setLocation(110,280);
-        j1.setSize(180,50);
-        j1.setFont(new Font("Rockwell", Font.BOLD, 20));
+        JButton j1 = new JButton("Play");
+        j1.setFont(new Font("Rockwell", Font.CENTER_BASELINE, 20));
+        j1.setBounds(130, 300, 140, 40);
         panel.add(j1);
-        setVisible(true);
+
+        // 设置按钮的层级顺序为最高，使其显示在顶层
+        panel.setComponentZOrder(j1, 0);
+
         j1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -39,65 +41,37 @@ public class StartFrame extends JFrame{
                 setVisible(false);
             }
         });
+        setVisible(true);
+
+        JLabel gameName=new JLabel();
+        gameName.setText("Jungle");
+        gameName.setLocation(110, 100);
+        gameName.setSize(200, 60);
+        gameName.setFont(new Font("Rockwell", Font.CENTER_BASELINE, 60));
+        gameName.setForeground(Color.white);
+        add(gameName);
+        panel.setComponentZOrder(gameName, 0);
+
+        Timer timer = new Timer(10, new ActionListener() {
+            private Color color = new Color(0,0,0);
+            int r=0;
+            int g=0;
+            int b=0;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(r<200){
+                    r=(r+1)%255;
+                    g=(r+1)%255;
+                    b=(r+1)%255;
+                    color = new Color(r,g,b);
+                }
+                gameName.setForeground(color);
+            }
+        });
+        timer.start();
     }
 
-//    public StartFrame(){
-//        setTitle("斗兽王");
-//        this.WIDTH=400;
-//        this.HEIGHT=500;
-//        setSize(WIDTH,HEIGHT);
-//        setLocationRelativeTo(null);
-//        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        setLayout(null);
-//
-//        ChessGameFrame chessGameFrame=new ChessGameFrame(1100,810);
-//        GameController controller = new GameController(chessGameFrame.getChessboardComponent(), new Chessboard());
-//        this.chessGameFrame=chessGameFrame;
-//        chessGameFrame.startFrame=this;
-//
-//        addStartButton();
-//
-//        Image picture = new ImageIcon("src/view/startFrame.jpg").getImage();
-//        picture = picture.getScaledInstance(400, 500,Image.SCALE_DEFAULT);
-//        ImageIcon icon = new ImageIcon(picture);
-//        JLabel start = new JLabel(icon);
-//        start.setSize(400, 500);
-//        start.setLocation(0, 0);
-//        add(start);
-//        setVisible(true);
-//    }
-//    private void addStartButton(){
-//        JButton button=new JButton("Start");
-//
-//        button.addActionListener((e) -> {
-////            this.setVisible(false);
-////            Timer.time = 45;
-////            if (Controller.timer == null){
-////                Controller.timer = new Timer(gameFrame.getBoardView().controller);
-////                Controller.timer.start();
-////            }
-//            this.setVisible(true);
-//
-//            chessGameFrame.statusLabel.setLocation(770, 81);
-//            chessGameFrame.repaint();
-//            chessGameFrame.getChessboardComponent().GameController.restart();
-//            chessGameFrame.setVisible(true);
-//        });
-//
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                new ChessGameFrame(getWidth(),getHeight());
-//                setVisible(false);
-//            }
-//        });
-//        button.setLocation(100,100);
-//        button.setSize(180,50);
-//        button.setFont(new Font("Rockwell", Font.BOLD, 20));
-//        add(button);
-//    }
-//
-//
     static class ImageComponent extends JComponent {
         Image paintImage;
         public ImageComponent(Image picture) {
