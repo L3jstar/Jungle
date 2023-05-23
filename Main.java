@@ -10,6 +10,7 @@ public class Main {
 //            ChessGameFrame mainFrame = new ChessGameFrame(1100, 810);
 //            GameController gameController = new GameController(mainFrame.getChessboardComponent(), new Chessboard());
 //            mainFrame.setVisible(true);
+            
 
             String filepath = "src/music/Wind Song.wav";
             Music musicObject = new Music();
