@@ -5,9 +5,8 @@ import view.*;
 import view.ChessComponent.ChessComponent;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.io.*;
-import java.util.Random;
-
 
 /**
  * Controller is the connection between model and view,
@@ -23,6 +22,7 @@ public class GameController implements GameListener {
 
     // Record whether there is a selected piece before
     private ChessboardPoint selectedPoint;
+    private ChessboardComponent chessboardComponent;
     public GameController(ChessboardComponent view, Chessboard model) {
         this.view = view;
         this.model = model;
@@ -71,22 +71,66 @@ public class GameController implements GameListener {
 
     private boolean win() {
         // TODO: Check the board if there is a winner
+        ImageIcon blueIcon = new ImageIcon("src/picture/victory blue.png");
+        ImageIcon redIcon = new ImageIcon("src/picture/victory red.png");
+
+//        JPanel panelb = new JPanel();
+//        panelb.setBackground(Color.BLUE);
+//        panelb.setSize(new Dimension(200, 64));
+//        panelb.setLayout(null);
+//        JLabel labelb = new JLabel("Winner is Blue !");
+//        labelb.setBounds(0, 0, 200, 64);
+//        labelb.setFont(new Font("Rockwell", Font.BOLD, 20));
+//        labelb.setHorizontalAlignment(SwingConstants.CENTER);
+//        panelb.add(labelb);
+//        UIManager.put("OptionPane.minimumSize",new Dimension(300, 120));
+//        JOptionPane.showMessageDialog(null, panelb, "Customized Message Dialog", JOptionPane.PLAIN_MESSAGE, blueIcon);//blue
+//
+//        JPanel panelr = new JPanel();
+//        panelr.setBackground(Color.RED);
+//        panelr.setSize(new Dimension(200, 64));
+//        panelr.setLayout(null);
+//        JLabel labelr = new JLabel("Winner is Red !");
+//        labelr.setBounds(0, 0, 200, 64);
+//        labelr.setFont(new Font("Rockwell", Font.BOLD, 20));
+//        labelr.setHorizontalAlignment(SwingConstants.CENTER);
+//        panelr.add(labelr);
+//        UIManager.put("OptionPane.minimumSize",new Dimension(300, 120));
+//        JOptionPane.showMessageDialog(null, panelr, "Customized Message Dialog", JOptionPane.PLAIN_MESSAGE, redIcon);//red
+
+        String[] options = {"Restart", "End the Game"};
+
         if (currentPlayer==PlayerColor.BLUE) {
-            JOptionPane.showMessageDialog(null, "蓝方 胜利！");
-
+            int b = JOptionPane.showOptionDialog(null, "Pleas choose",
+                    "Winner is Blue !",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, blueIcon, options, options[0]);
+            if (b == 0) {
+                    chessboardComponent.gameController.restart();
+            } else if (b==1) {
+                    System.exit(0);
+                }
         } else {
-            JOptionPane.showMessageDialog(null, "红方 胜利！");
-
+            int r = JOptionPane.showOptionDialog(null, "Pleas choose",
+                    "Winner is Red !",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, redIcon, options, options[0]);
+            if (r == 0) {
+                    chessboardComponent.gameController.restart();
+            } else if (r==1) {
+                    System.exit(0);
+                }
         }
         return false;
+
     }
     public void restart(){
         Constant.turnOfBlue=1;
         Constant.turnOfRed=1;
         Constant.color="Blue";
         Constant.mainFrame.dispose();
-        new StartFrame();
-
+//        new StartFrame();
+        ChessGameFrame mainFrame = new ChessGameFrame(1100, 810);
+        GameController gameController = new GameController(mainFrame.getChessboardComponent(), new Chessboard());
+        mainFrame.setVisible(true);
     }
 
     public void loadBoard(){//读取的信息转化为棋盘
@@ -144,42 +188,6 @@ public class GameController implements GameListener {
             }
         }
     }
-
-//    public void changeBGM(){
-//        Random random = new Random();
-//        int v = random.nextInt(4);
-//
-////    if(v==0){
-////        Constant.filepath="src/music/Crepusculo.wav";
-////    } else if (v==1) {
-////        Constant.filepath="src/music/Indigo Love.wav";
-////    } else if (v==2) {
-////        Constant.filepath="src/music/Sunflower.wav";
-////    }else if (v==3){
-////        Constant.filepath="src/music/Waiting Wind.wav";
-////    }else {
-////        Constant.filepath = "src/music/Wind Song.wav";
-////    }
-//
-////        Music musicObject = new Music();
-////        musicObject.playMusic(Constant.filepath);
-//
-////        if(v==0){
-////            Constant.audioPlayer.stop();
-////            Constant.audioPlayer.play("src/music/Crepusculo.wav");
-////        } else if (v==1) {
-////            Constant.audioPlayer.play("src/music/Indigo Love.wav");
-////        } else if (v==2) {
-////            Constant.audioPlayer.play("src/music/Sunflower.wav");
-////        }else if (v==3){
-////            Constant.audioPlayer.play("src/music/Waiting Wind.wav");
-////        }else {
-////            Constant.audioPlayer.play("src/music/Wind Song.wav");
-////        }
-//        Constant.filepath="src/music/Crepusculo.wav";
-//        Constant.audioPlayer.stop();
-//
-//    }
 
     public void AI(){
 
