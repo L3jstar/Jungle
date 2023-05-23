@@ -1,5 +1,4 @@
 package view;
-import controller.GameController;
 import model.Constant;
 import javax.swing.*;
 import java.awt.*;
@@ -31,8 +30,6 @@ public class ChessGameFrame extends JFrame {
         addRestartButton();
         addLoadButton();
         addSaveButton();
-//        addClearButton();
-//        addChangeBGMButton();
         addAIMButton();
         JPanel panel=(JPanel)getContentPane();
         setVisible(true);
@@ -89,21 +86,12 @@ public class ChessGameFrame extends JFrame {
         JButton button = new JButton("Load");
         button.addActionListener(e -> {
             System.out.println("Click Load");
-//            String path = JOptionPane.showInputDialog(this,"Input Path here");
-//            GameController.loadGameFromFile(path);
             chessboardComponent.gameController.loadBoard();
         });
         button.setLocation(HEIGTH, HEIGTH / 10 + 240);
         button.setSize(200, 60);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
         add(button);
-//        button.setBorderPainted(false);
-//        button.setContentAreaFilled(false);
-//        button.setBorder(BorderFactory.createRaisedBevelBorder());
-//        button.setBorder(BorderFactory.createLoweredBevelBorder());
-//        button.setBackground(Color.green);
-//        button.setIcon(new ImageIcon(getClass().getResource("src/view/startFrame.jpg")));
-//        button.setMargin(new Insets(0,0,0,0));
     }
 
     private void addSaveButton(){
@@ -117,30 +105,6 @@ public class ChessGameFrame extends JFrame {
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
         add(button);
     }
-
-//    private void addClearButton(){
-//        JButton button = new JButton("Clear");
-//        button.addActionListener(e -> {
-//            System.out.println("Click Clear");
-//            chessboardComponent.gameController.clear();
-//        });
-//        button.setLocation(HEIGTH, HEIGTH / 10 + 120);
-//        button.setSize(200, 60);
-//        button.setFont(new Font("Rockwell", Font.BOLD, 20));
-//        add(button);
-//    }
-
-//    private void addChangeBGMButton(){
-//        JButton button = new JButton("Change BGM");
-//        button.addActionListener(e -> {
-//            System.out.println("Click Change BGM");
-//            chessboardComponent.gameController.changeBGM();
-//        });
-//        button.setLocation(HEIGTH, HEIGTH / 10 + 60);
-//        button.setSize(200, 60);
-//        button.setFont(new Font("Rockwell", Font.BOLD, 20));
-//        add(button);
-//    }
 
     private void addAIMButton(){
         JButton button = new JButton("Play with AI");
