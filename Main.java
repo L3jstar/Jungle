@@ -6,7 +6,6 @@ public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new StartFrame();
-            String filepath = "src/music/Wind Song.wav";
             musicObject.playMusic();
         });
     }

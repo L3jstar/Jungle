@@ -5,13 +5,11 @@ import view.*;
 import view.ChessComponent.ChessComponent;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
 import model.Constant;
-
-import static model.Constant.color;
 import static model.Constant.gameController;
 import static view.ChessGameFrame.musicIndex;
 import static view.ChessGameFrame.musicList;
@@ -79,6 +77,32 @@ public class GameController implements GameListener {
         Constant.color="Red";
         Constant.statusLabel.setText("Turn " + Constant.turnOfRed + ": " + Constant.color);
         }
+
+        Constant.time=30;
+        String text="No moves";
+        if(model.getSteps().size()!=0){
+            int[] previewsStep = model.getSteps().get(model.steps.size()-1).clone();
+            String name=null;
+            switch (previewsStep[2]){
+                case 8: name="Elephant";break;
+                case 7: name="Lion"    ;break;
+                case 6: name="Tiger"   ;break;
+                case 5: name="Leopard" ;break;
+                case 4: name="Wolf"    ;break;
+                case 3: name="Dog"     ;break;
+                case 2: name="Cat"     ;break;
+                case 1: name="Rat"     ;break;
+            }
+            String player;
+            if (previewsStep[1]==0){
+                player="Blue";
+            } else {
+                player="Red";
+            }
+            text = "<html>"+player+" "+name+" moves<br>from ["+previewsStep[3]+","+previewsStep[4]+"] to ["+previewsStep[5]+","+previewsStep[6]+"]";
+        }
+        Constant.PreviewsMove.setText(text);
+
     }
 
     public void retractSwapColor(){
@@ -92,6 +116,31 @@ public class GameController implements GameListener {
             Constant.statusLabel.setText("Turn " + Constant.turnOfBlue + ": " + Constant.color);
         }
         currentPlayer = currentPlayer == PlayerColor.BLUE ? PlayerColor.RED : PlayerColor.BLUE;
+
+        Constant.time=30;
+        String text="No moves";
+        if(model.getSteps().size()!=0){
+            int[] previewsStep = model.getSteps().get(model.steps.size()-1).clone();
+            String name=null;
+            switch (previewsStep[2]){
+                case 8: name="Elephant";break;
+                case 7: name="Lion"    ;break;
+                case 6: name="Tiger"   ;break;
+                case 5: name="Leopard" ;break;
+                case 4: name="Wolf"    ;break;
+                case 3: name="Dog"     ;break;
+                case 2: name="Cat"     ;break;
+                case 1: name="Rat"     ;break;
+            }
+            String player;
+            if (previewsStep[1]==0){
+                player="Blue";
+            } else {
+                player="Red";
+            }
+            text = "<html>"+player+" "+name+" moves<br>from ["+previewsStep[3]+","+previewsStep[4]+"] to ["+previewsStep[5]+","+previewsStep[6]+"]";
+        }
+        Constant.PreviewsMove.setText(text);
     }
     public void Win() {
         String[] options = {"Restart", "End the Game"};
@@ -125,9 +174,11 @@ public class GameController implements GameListener {
         Constant.turnOfBlue=1;
         Constant.turnOfRed=1;
         Constant.color="Blue";
+        Constant.mainFrame.getTimer().stop();
         Constant.mainFrame.dispose();
-//        new StartFrame();
+        Constant.time=30;
         ChessGameFrame mainFrame = new ChessGameFrame(1100, 810);
+        Constant.mainFrame=mainFrame;
         GameController gameController = new GameController(mainFrame.getChessboardComponent(), new Chessboard());
         mainFrame.setVisible(true);
     }
@@ -145,11 +196,14 @@ public class GameController implements GameListener {
             try (FileReader fileReader = new FileReader(filePath);
                  BufferedReader bufferedReader = new BufferedReader(fileReader)) {
 
-
+                if (!filePath.toLowerCase().endsWith(".txt")) {
+                    throw new IllegalArgumentException();
+                }
                 clear();
                 model.removeAll();
-
+                view.repaint();
                 String line;//一次一行
+                currentPlayer=null;
                 while ((line = bufferedReader.readLine()) != null) {
                     if(line.startsWith("Color")){
                         if ( line.substring(5).equals("BLUE")){
@@ -179,20 +233,27 @@ public class GameController implements GameListener {
                         }
                         model.getGrid()[Row][Col].setPiece(new ChessPiece(owner, name,Rank,new ChessboardPoint(Row,Col)));
                         model.getGrid()[Row][Col].getPiece().setOriginRank(OriginRank);
-
                     }
-
                 }
-                model.addArray();
                 view.initiateChessComponent(model);
+                model.addArray();
+                Constant.time=30;
+                if(currentPlayer==null){
+                    JOptionPane.showMessageDialog(null, "No current player!");
+                    restart();
+                }
+                if(!model.checkPiece()){
+                    JOptionPane.showMessageDialog(null, "Wrong piece!");
+                    restart();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (IllegalArgumentException e){
+                String warning = "NOT a txt file!";
+                JOptionPane.showMessageDialog(null, warning);
             }
         }
     }
-
-    // click an empty cell
-
 
     public void saveBoard(){
         try {
@@ -262,9 +323,7 @@ public class GameController implements GameListener {
     public void onPlayerClickCell(ChessboardPoint point, CellComponent component) {//点击棋盘
 
         if (selectedPoint != null && model.isValidMove(selectedPoint, point)) {
-
             hideValidMoves();//add
-
             if(model.isTrap(point)){
                 model.trapped(selectedPoint);
             }
@@ -294,12 +353,8 @@ public class GameController implements GameListener {
             if (model.getChessPieceOwner(point).equals(currentPlayer)) {
                 selectedPoint = point;
                 component.setSelected(true);
-
-                //加一个possibleMove
-                showValidMoves(point);
-
-
                 component.repaint();
+                showValidMoves(point);//add
             }
         } else if (selectedPoint.equals(point)) {
             hideValidMoves();//add
@@ -342,7 +397,7 @@ public class GameController implements GameListener {
 
     private List<ChessboardPoint> validMoves;
     public void showValidMoves(ChessboardPoint point) {
-        validMoves = model.possibleMove(point);
+        validMoves = new ArrayList<>(model.possibleMove(point));
         view.showValidMoves(validMoves);
     }
     public void hideValidMoves() {

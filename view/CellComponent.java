@@ -37,8 +37,6 @@ public class CellComponent extends JPanel {
         super.paintComponents(g);
         g.setColor(background);
         g.fillRect(1, 1, this.getWidth() - 1, this.getHeight() - 1);
-
-
         if (validMove) {
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
@@ -46,7 +44,6 @@ public class CellComponent extends JPanel {
             g2d.fillRect(0, 0, getWidth(), getHeight());
             g2d.dispose();
         }
-
     }
 
     public CellComponent() {

@@ -326,8 +326,9 @@ public class Chessboard {
 
         return getChessPieceAt(src).canCapture(getChessPieceAt(dest));
     }
+    public  static List<ChessboardPoint> possiblePoints = new ArrayList<>();
     public List<ChessboardPoint> possibleMove(ChessboardPoint point){//可能的移动point
-        List<ChessboardPoint> possiblePoints = new ArrayList<>();
+
         int row = point.getRow();
         int col = point.getCol();
         ChessboardPoint point1 = new ChessboardPoint(row+1,col);//下
@@ -343,10 +344,10 @@ public class Chessboard {
                 point2.setCol(col+3);
             }
             if(isRiver(point3)){
-                point3.setRow(row-4);
+                point3.setCol(col-3);
             }
             if(isRiver(point4)){
-                point4.setCol(col-3);
+                point4.setRow(row-4);
             }
         }
         possiblePoints.add(point1);
@@ -484,4 +485,48 @@ public class Chessboard {
         }
         steps.remove(steps.size()-1);
     }
+
+    public boolean checkPiece(){
+        for(ChessPiece piece: blue){
+            switch (piece.getName()){
+                case  "Elephant": if(piece.getOriginRank()!=8){return false;}break;
+                case  "Lion"    : if(piece.getOriginRank()!=7){return false;}break;
+                case  "Tiger"   : if(piece.getOriginRank()!=6){return false;}break;
+                case  "Leopard" : if(piece.getOriginRank()!=5){return false;}break;
+                case  "Wolf"    : if(piece.getOriginRank()!=4){return false;}break;
+                case  "Dog"     : if(piece.getOriginRank()!=3){return false;}break;
+                case  "Cat"     : if(piece.getOriginRank()!=2){return false;}break;
+                case  "Rat"     : if(piece.getOriginRank()!=1){return false;}break;
+                default: return false;
+            }
+            if(piece.getOriginRank()>8 ||piece.getOriginRank()<1){
+                return false;
+            }
+            if(piece.getRank()!=0 && piece.getRank() != piece.getOriginRank()){
+                return false;
+            }
+        }
+        for(ChessPiece piece: red){
+            switch (piece.getName()){
+                case  "Elephant": if(piece.getOriginRank()!=8){return false;}break;
+                case  "Lion"    : if(piece.getOriginRank()!=7){return false;}break;
+                case  "Tiger"   : if(piece.getOriginRank()!=6){return false;}break;
+                case  "Leopard" : if(piece.getOriginRank()!=5){return false;}break;
+                case  "Wolf"    : if(piece.getOriginRank()!=4){return false;}break;
+                case  "Dog"     : if(piece.getOriginRank()!=3){return false;}break;
+                case  "Cat"     : if(piece.getOriginRank()!=2){return false;}break;
+                case  "Rat"     : if(piece.getOriginRank()!=1){return false;}break;
+                default: return false;
+            }
+            if(piece.getOriginRank()>8 ||piece.getOriginRank()<1){
+                return false;
+            }
+            if(piece.getRank()!=0 && piece.getRank() != piece.getOriginRank()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }
