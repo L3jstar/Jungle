@@ -68,7 +68,7 @@ public class ChessGameFrame extends JFrame {
         setVisible(true);
         imageList = new ArrayList<>();
         imageList.add(new ImageIcon("src/picture/mainFrame1.jpg"));
-        imageList.add(new ImageIcon("src/picture/mainFrame2.jpg"));
+        imageList.add(new ImageIcon("src/picture/mainFrame2.png"));
         imageList.add(new ImageIcon("src/picture/mainFrame3.jpg"));
         imageList.add(new ImageIcon("src/picture/mainFrame4.jpg"));
         imageLabel = new JLabel(imageList.get(0));
