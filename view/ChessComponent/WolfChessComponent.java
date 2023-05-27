@@ -49,7 +49,7 @@ public class WolfChessComponent extends ChessComponent {
                 file=new File("C:\\Users\\罗鑫\\Desktop\\Java\\homework\\src\\project\\src\\picture\\redWolf.jpg");
             }
             BufferedImage image= ImageIO.read(file);
-            g.drawImage(image,0,0,getWidth(),getHeight(),null);
+            g.drawImage(image,5,5,getWidth()-10,getHeight()-10,null);
         } catch (IOException e) {
             e.printStackTrace();
         }

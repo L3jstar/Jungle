@@ -2,9 +2,6 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
@@ -27,18 +24,22 @@ public class Chessboard {
 
     int turn;
 
+    public ArrayList<int[]> getSteps() {
+        return steps;
+    }
+
+    public ArrayList<int[]> steps = new ArrayList<>();
+
     public Chessboard() {
         this.grid = new Cell[Constant.CHESSBOARD_ROW_SIZE.getNum()][Constant.CHESSBOARD_COL_SIZE.getNum()];//19X19
-        this.red = new ArrayList<>(8);
-        this.blue = new ArrayList<>(8);
+        this.red = new ArrayList<>();
+        this.blue = new ArrayList<>();
         initGrid();
         initPieces();
         turn = 1;
         addArray();
-
-
     }
-    public void addArray(){
+    public void addArray(){//bug
         for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
             for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
                 if (grid[i][j].getPiece() != null && grid[i][j].getPiece().getOwner() == PlayerColor.RED) {
@@ -48,8 +49,6 @@ public class Chessboard {
                 }
             }
         }//red 和 blue 的数组
-        Collections.sort(red);
-        Collections.sort(blue);
     }
 
     private void initGrid() {
@@ -60,19 +59,13 @@ public class Chessboard {
         }
     }
     public PlayerColor checkWin(){//可能加一个判断条件？一方所有棋子不能动了则输
-        boolean redEmpty = true;
-        for(int i = 0; i < red.size(); i++){
-            if(red.get(i) != null){
-                redEmpty = false;
-                break;
-            }
+        boolean redEmpty = false;
+        if(red.size()==0){
+            redEmpty = true;
         }
-        boolean blueEmpty = true;
-        for(int i = 0; i < blue.size(); i++){
-            if(blue.get(i) != null){
-                blueEmpty = false;
-                break;
-            }
+        boolean blueEmpty = false;
+        if(blue.size()==0){
+            blueEmpty = true;
         }
         if(grid[8][3].getPiece() != null || blueEmpty){
             return PlayerColor.RED;
@@ -107,17 +100,14 @@ public class Chessboard {
     }
     public void removeAll(){
         for(int i=0;i < red.size(); i++){
-            if(red.get(i)!=null){
-                getGridAt(red.get(i).getCurrentPoint()).removePiece();
-            }
+            getGridAt(red.get(i).getCurrentPoint()).removePiece();
         }
         for(int i=0;i < blue.size(); i++){
-            if(blue.get(i)!=null){
-                getGridAt(blue.get(i).getCurrentPoint()).removePiece();
-            }
+            getGridAt(blue.get(i).getCurrentPoint()).removePiece();
         }
         red.clear();
         blue.clear();
+        steps.clear();
     }
 
     public boolean isRiver(ChessboardPoint point) {
@@ -169,16 +159,62 @@ public class Chessboard {
         }
         setChessPiece(dest, removeChessPiece(src));
         getChessPieceAt(dest).setCurrentPoint(dest);
+        int[] move =new int[9];
+        move[0]=0;
+        if(getChessPieceAt(dest).getOwner().equals(PlayerColor.BLUE)){
+            move[1]=0;
+        }else {
+            move[1]=1;
+        }
+        move[2]=getChessPieceAt(dest).getOriginRank();
+        move[3]=src.getRow();
+        move[4]=src.getCol();
+        move[5]=dest.getRow();
+        move[6]=dest.getCol();
+        steps.add(move);
     }
 
     public void captureChessPiece(ChessboardPoint src, ChessboardPoint dest) {
         if (!isValidCapture(src, dest)) {
             throw new IllegalArgumentException("Illegal chess capture!");
         }
+
+        int[] capture =new int[9];
+        capture[0]=1;
+        if(getChessPieceAt(src).getOwner().equals(PlayerColor.BLUE)){
+            capture[1]=0;
+        }else {
+            capture[1]=1;
+        }
+        capture[2]=getChessPieceAt(src).getOriginRank();
+        capture[3]=src.getRow();
+        capture[4]=src.getCol();
+        capture[5]=dest.getRow();
+        capture[6]=dest.getCol();
+        if(getChessPieceAt(dest).getOwner().equals(PlayerColor.BLUE)){
+            capture[7]=0;
+        } else {
+            capture[7]=1;
+        }
+        capture[8]=getChessPieceAt(dest).getOriginRank();
+        steps.add(capture);
+
+
+
         if(getChessPieceAt(dest).getOwner().equals(PlayerColor.RED)){
-            red.set(getChessPieceAt(dest).getOriginRank()-1,null);
+            for(int i=0;i<red.size();i++){
+                if(red.get(i).getOriginRank()==getChessPieceAt(dest).getOriginRank()){
+                    red.remove(i);
+                    break;
+                }
+            }
         } else if (getChessPieceAt(dest).getOwner().equals(PlayerColor.BLUE)){
-            blue.set(getChessPieceAt(dest).getOriginRank()-1,null);
+            for(int i=0;i<blue.size();i++){
+                if(blue.get(i).getOriginRank()==getChessPieceAt(dest).getOriginRank()){
+                    blue.remove(i);
+                    break;
+                }
+            }
         }
         getGridAt(dest).removePiece();
         setChessPiece(dest,removeChessPiece(src));
@@ -294,11 +330,11 @@ public class Chessboard {
         List<ChessboardPoint> possiblePoints = new ArrayList<>();
         int row = point.getRow();
         int col = point.getCol();
-        ChessboardPoint point1 = new ChessboardPoint(row+1,col);//下 !!
+        ChessboardPoint point1 = new ChessboardPoint(row+1,col);//下
         ChessboardPoint point2 = new ChessboardPoint(row,col+1);//右
         ChessboardPoint point3 = new ChessboardPoint(row,col-1);//左
         ChessboardPoint point4 = new ChessboardPoint(row-1,col);//上
-        if(getChessPieceAt(point).getName() == "Lion" || getChessPieceAt(point).getName() == "Tiger"){
+        if(getChessPieceAt(point).getName().equals("Lion" )|| getChessPieceAt(point).getName().equals("Tiger")){
             //是虎和狮
             if(isRiver(point1)){
                 point1.setRow(row+4);
@@ -317,31 +353,40 @@ public class Chessboard {
         possiblePoints.add(point2);
         possiblePoints.add(point3);
         possiblePoints.add(point4);
-        for(ChessboardPoint p: possiblePoints){
+        for(int i=0;i<possiblePoints.size();i++){
+            ChessboardPoint p = possiblePoints.get(i);
+            if(p.getRow()<0 || p.getRow()>8 || p.getCol()<0 ||p.getCol()>6){
+                possiblePoints.remove(p);
+                i--;
+                continue;
+            }
             if(getChessPieceAt(p) == null && !specialMove(point,p)){
                 possiblePoints.remove(p);
+                i--;
+                continue;
             }
             if(getChessPieceAt(p) != null && !isValidCapture(point,p)){
                 possiblePoints.remove(p);
+                i--;
             }
         }
         return possiblePoints;
     }
-
-    public List<ChessboardPoint> Al(){//Al 红方
+    public List<ChessboardPoint> AI(){
         List<ChessboardPoint> move = new ArrayList<>();//用于储存移动的起点与终点
         ChessboardPoint src;
         ChessboardPoint dest;
 
         for(int i=0;i<blue.size();i++){
-            if(blue.get(i)!=null){
+            if(blue.get(i) != null){
                 List<ChessboardPoint> PossibleMove = new ArrayList<>(possibleMove(blue.get(i).getCurrentPoint()));
                 for(ChessboardPoint p : PossibleMove){
-                    if(isValidCapture(blue.get(i).getCurrentPoint(),p)){
+                    if(isValidCapture(blue.get(i).getCurrentPoint(),p) && possibleMove(p).size()!=0){
                         src=p;
-                        Random random = new Random();
                         List<ChessboardPoint> chessMove = new ArrayList<>(possibleMove(src));
-                        dest=chessMove.get(random.nextInt());
+                        Random random = new Random();
+                        int dir = random.nextInt(chessMove.size());
+                        dest=chessMove.get(dir);
                         move.add(src);
                         move.add(dest);
                         return move;
@@ -351,7 +396,7 @@ public class Chessboard {
         }//是否有棋要逃
 
         for(int i=0;i<red.size();i++){
-            if(red.get(i)!=null){
+            if(red.get(i) != null){
                 List<ChessboardPoint> PossibleMove = new ArrayList<>(possibleMove(red.get(i).getCurrentPoint()));
                 for(ChessboardPoint p : PossibleMove){
                     if(isValidCapture(red.get(i).getCurrentPoint(),p)){
@@ -370,8 +415,8 @@ public class Chessboard {
         boolean canMove=false;
 
         do{
-            Random random = new Random(Red.size());
-            int index = random.nextInt();
+            Random random = new Random();
+            int index = random.nextInt(Red.size());
             if(Red.get(index)==null){
                 havePiece = false;
                 Red.remove(index);
@@ -384,36 +429,14 @@ public class Chessboard {
                     Red.remove(index);
                 } else {
                     canMove=true;
-                    if(checkDirection(Red.get(index).getCurrentPoint(),chessMove.get(0))=="下"){
-                        src=Red.get(index).getCurrentPoint();
-                        dest=chessMove.get(0);
-                        move.add(src);
-                        move.add(dest);
-                        return move;
-                    }
-                    switch (Red.get(index).getOriginRank()){
-                        case 1,3,5,7:
-                            for(int i=0;i<chessMove.size();i++){
-                                if(checkDirection(Red.get(index).getCurrentPoint(),chessMove.get(i))=="右"){
-                                    src=Red.get(index).getCurrentPoint();
-                                    dest=chessMove.get(i);
-                                    move.add(src);
-                                    move.add(dest);
-                                    return move;
-                                }
-                            }
-                            break;
-                        case 2,4,6,8:
-                            for(int i=0;i<chessMove.size();i++){
-                                if(checkDirection(Red.get(index).getCurrentPoint(),chessMove.get(i))=="左"){
-                                    src=Red.get(index).getCurrentPoint();
-                                    dest=chessMove.get(i);
-                                    move.add(src);
-                                    move.add(dest);
-                                    return move;
-                                }
-                            }
-                            break;
+                    for(ChessboardPoint movePoint:chessMove){
+                        if(calculateDistance(Red.get(index).getCurrentPoint(),new ChessboardPoint(8,3))>calculateDistance(movePoint,new ChessboardPoint(8,3))){
+                            src=Red.get(index).getCurrentPoint();
+                            dest=movePoint;
+                            move.add(src);
+                            move.add(dest);
+                            return move;
+                        }
                     }
                     src=Red.get(index).getCurrentPoint();
                     dest=chessMove.get(0);
@@ -422,27 +445,43 @@ public class Chessboard {
                     return move;
                 }
             }
-        } while ((!havePiece || !canMove) && Red.size()!=0);//随机选一个可以动的棋(bug?)
+        } while ((!havePiece || !canMove) && Red.size()!=0);//随机选一个可以动的棋
         return null;
     }
+    public void Retract(){//悔棋
 
-    public String checkDirection(ChessboardPoint src,ChessboardPoint dest){
-        if(src.getRow()==dest.getRow()){
-            if(src.getCol() > dest.getCol()){
-                return "左";
+
+        ChessboardPoint src = new ChessboardPoint(steps.get(steps.size()-1)[3],steps.get(steps.size()-1)[4]);
+        ChessboardPoint dest = new ChessboardPoint(steps.get(steps.size()-1)[5],steps.get(steps.size()-1)[6]);
+        setChessPiece(src, removeChessPiece(dest));
+        getChessPieceAt(src).setCurrentPoint(src);
+        if(isTrap(src)){
+            trapped(src);
+        }
+
+        if(steps.get(steps.size()-1)[0]==1){//吃子
+            String name=null;
+            PlayerColor color;
+            switch (steps.get(steps.size()-1)[8]){
+                case 1: name = "Elephant"; break;
+                case 2: name = "Lion"    ; break;
+                case 3: name = "Tiger"   ; break;
+                case 4: name = "Leopard" ; break;
+                case 5: name = "Wolf"    ; break;
+                case 6: name = "Dog"     ; break;
+                case 7: name = "Cat"     ; break;
+                case 8: name = "Rat"     ; break;
             }
-            if(src.getCol() < dest.getCol()){
-                return "右";
+            if (steps.get(steps.size()-1)[7]==0){
+                color = PlayerColor.BLUE;
+            }else {
+                color = PlayerColor.RED;
+            }
+            grid[dest.getRow()][dest.getCol()].setPiece(new ChessPiece(color, name,steps.get(steps.size()-1)[8],new ChessboardPoint(dest.getRow(),dest.getCol())));
+            if(isTrap(dest)){
+                trapped(dest);
             }
         }
-        if(src.getCol()==dest.getCol()){
-            if(src.getRow() > dest.getRow()){
-                return "上";
-            }
-            if(src.getRow() < dest.getRow()){
-                return "下";
-            }
-        }
-        return null;
+        steps.remove(steps.size()-1);
     }
 }

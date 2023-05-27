@@ -7,6 +7,14 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.*;
+import java.util.List;
+
+import model.Constant;
+
+import static model.Constant.color;
+import static model.Constant.gameController;
+import static view.ChessGameFrame.musicIndex;
+import static view.ChessGameFrame.musicList;
 
 /**
  * Controller is the connection between model and view,
@@ -22,7 +30,9 @@ public class GameController implements GameListener {
 
     // Record whether there is a selected piece before
     private ChessboardPoint selectedPoint;
-    private ChessboardComponent chessboardComponent;
+    public static boolean win=false;
+
+
     public GameController(ChessboardComponent view, Chessboard model) {
         this.view = view;
         this.model = model;
@@ -33,14 +43,12 @@ public class GameController implements GameListener {
         view.initiateChessComponent(model);
         view.repaint();
     }
-
     private void initialize() {
         for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
             for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
             }
         }
     }
-
     public void clear(){
         for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
             for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
@@ -54,10 +62,14 @@ public class GameController implements GameListener {
         }
     }
 
-    // after a valid move swap the player
-    private void swapColor() {
+    public void changeBGM() {
+        Constant.musicObject.stopMusic();
+        musicIndex = (musicIndex + 1) % 5;
+        Constant.musicObject.initClip(musicList.get(musicIndex));
+        Constant.musicObject.playMusic();
+    }
+    public void swapColor() {
         currentPlayer = currentPlayer == PlayerColor.BLUE ? PlayerColor.RED : PlayerColor.BLUE;
-
         if(PlayerColor.BLUE==currentPlayer){
         Constant.turnOfBlue++;
         Constant.color="Blue";
@@ -65,63 +77,50 @@ public class GameController implements GameListener {
         }else {
         Constant.turnOfRed++;
         Constant.color="Red";
-        Constant.statusLabel.setText("Turn " + Constant.turnOfBlue + ": " + Constant.color);
+        Constant.statusLabel.setText("Turn " + Constant.turnOfRed + ": " + Constant.color);
         }
     }
 
-    private boolean win() {
-        // TODO: Check the board if there is a winner
+    public void retractSwapColor(){
+        if(PlayerColor.BLUE==currentPlayer){
+            Constant.turnOfBlue--;
+            Constant.color="Red";
+            Constant.statusLabel.setText("Turn " + Constant.turnOfRed + ": " + Constant.color);
+        }else {
+            Constant.turnOfRed--;
+            Constant.color="Blue";
+            Constant.statusLabel.setText("Turn " + Constant.turnOfBlue + ": " + Constant.color);
+        }
+        currentPlayer = currentPlayer == PlayerColor.BLUE ? PlayerColor.RED : PlayerColor.BLUE;
+    }
+    public void Win() {
+        String[] options = {"Restart", "End the Game"};
         ImageIcon blueIcon = new ImageIcon("src/picture/victory blue.png");
         ImageIcon redIcon = new ImageIcon("src/picture/victory red.png");
 
-//        JPanel panelb = new JPanel();
-//        panelb.setBackground(Color.BLUE);
-//        panelb.setSize(new Dimension(200, 64));
-//        panelb.setLayout(null);
-//        JLabel labelb = new JLabel("Winner is Blue !");
-//        labelb.setBounds(0, 0, 200, 64);
-//        labelb.setFont(new Font("Rockwell", Font.BOLD, 20));
-//        labelb.setHorizontalAlignment(SwingConstants.CENTER);
-//        panelb.add(labelb);
-//        UIManager.put("OptionPane.minimumSize",new Dimension(300, 120));
-//        JOptionPane.showMessageDialog(null, panelb, "Customized Message Dialog", JOptionPane.PLAIN_MESSAGE, blueIcon);//blue
-//
-//        JPanel panelr = new JPanel();
-//        panelr.setBackground(Color.RED);
-//        panelr.setSize(new Dimension(200, 64));
-//        panelr.setLayout(null);
-//        JLabel labelr = new JLabel("Winner is Red !");
-//        labelr.setBounds(0, 0, 200, 64);
-//        labelr.setFont(new Font("Rockwell", Font.BOLD, 20));
-//        labelr.setHorizontalAlignment(SwingConstants.CENTER);
-//        panelr.add(labelr);
-//        UIManager.put("OptionPane.minimumSize",new Dimension(300, 120));
-//        JOptionPane.showMessageDialog(null, panelr, "Customized Message Dialog", JOptionPane.PLAIN_MESSAGE, redIcon);//red
-
-        String[] options = {"Restart", "End the Game"};
-
-        if (currentPlayer==PlayerColor.BLUE) {
+        if(model.checkWin().equals(PlayerColor.BLUE)){
             int b = JOptionPane.showOptionDialog(null, "Pleas choose",
                     "Winner is Blue !",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, blueIcon, options, options[0]);
             if (b == 0) {
-                    chessboardComponent.gameController.restart();
+                gameController.restart();
             } else if (b==1) {
-                    System.exit(0);
-                }
-        } else {
+                System.exit(0);
+            }
+        }
+
+        if(model.checkWin().equals(PlayerColor.RED)){
             int r = JOptionPane.showOptionDialog(null, "Pleas choose",
                     "Winner is Red !",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, redIcon, options, options[0]);
             if (r == 0) {
-                    chessboardComponent.gameController.restart();
+                gameController.restart();
             } else if (r==1) {
-                    System.exit(0);
-                }
+                System.exit(0);
+            }
         }
-        return false;
-
     }
+
     public void restart(){
         Constant.turnOfBlue=1;
         Constant.turnOfRed=1;
@@ -131,6 +130,9 @@ public class GameController implements GameListener {
         ChessGameFrame mainFrame = new ChessGameFrame(1100, 810);
         GameController gameController = new GameController(mainFrame.getChessboardComponent(), new Chessboard());
         mainFrame.setVisible(true);
+    }
+
+    private void setContentPane(JPanel panel1) {
     }
 
     public void loadBoard(){//读取的信息转化为棋盘
@@ -189,52 +191,8 @@ public class GameController implements GameListener {
         }
     }
 
-    public void AI(){
-
-    }
-
     // click an empty cell
-    @Override
-    public void onPlayerClickCell(ChessboardPoint point, CellComponent component) {
-        if (selectedPoint != null && model.isValidMove(selectedPoint, point)) {
-            if(model.isTrap(point)){
-                model.trapped(selectedPoint);
-            }
-            if(model.isTrap(selectedPoint) && !model.isTrap(point)){
-                model.escape(selectedPoint);
-            }
-            model.moveChessPiece(selectedPoint, point);
-            view.setChessComponentAtGrid(point, view.removeChessComponentAtGrid(selectedPoint));
-            selectedPoint = null;
-            swapColor();
-            view.repaint();
-            // TODO: if the chess enter Dens or Traps and so on
-        }
-    }
 
-    // click a cell with a chess
-    @Override
-    public void onPlayerClickChessPiece(ChessboardPoint point, ChessComponent component) {
-        if (selectedPoint == null) {
-            if (model.getChessPieceOwner(point).equals(currentPlayer)) {
-                selectedPoint = point;
-                component.setSelected(true);
-                component.repaint();
-            }
-        } else if (selectedPoint.equals(point)) {
-            selectedPoint = null;
-            component.setSelected(false);
-            component.repaint();
-        }
-        if(selectedPoint != null && model.isValidCapture(selectedPoint, point)){
-            view.removeChessComponentAtGrid(point);
-            model.captureChessPiece(selectedPoint,point);
-            view.setChessComponentAtGrid(point, view.removeChessComponentAtGrid(selectedPoint));
-            selectedPoint = null;
-            swapColor();
-            view.repaint();
-        }
-    }
 
     public void saveBoard(){
         try {
@@ -271,6 +229,124 @@ public class GameController implements GameListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public boolean isAI(){
+        return isAI;
+    }
+    public boolean isAI=false;
+
+    public void setAI(boolean AI) {
+        isAI = AI;
+    }
+
+    public void swapAI() {
+        isAI = isAI == true ? false : true;
+    }
+    public PlayerColor getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(PlayerColor currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
+    public Chessboard getModel() {
+        return model;
+    }
+
+    public void setModel(Chessboard model) {
+        this.model = model;
+    }
+
+    @Override
+    public void onPlayerClickCell(ChessboardPoint point, CellComponent component) {//点击棋盘
+
+        if (selectedPoint != null && model.isValidMove(selectedPoint, point)) {
+
+            hideValidMoves();//add
+
+            if(model.isTrap(point)){
+                model.trapped(selectedPoint);
+            }
+            if(model.isTrap(selectedPoint) && !model.isTrap(point)){
+                model.escape(selectedPoint);
+            }
+            model.moveChessPiece(selectedPoint, point);
+            view.setChessComponentAtGrid(point, view.removeChessComponentAtGrid(selectedPoint));
+            selectedPoint = null;
+            swapColor();
+            view.repaint();
+
+            String filepath = "src/music/click.wav";
+            ClickMusic musicObject = new ClickMusic();
+            musicObject.playMusic(filepath);
+
+            if(model.checkWin()!=null){
+                Win();
+            }
+        }
+    }
+
+    // click a cell with a chess
+    public void onPlayerClickChessPiece(ChessboardPoint point, ChessComponent component) {//点击棋子
+
+        if (selectedPoint == null) {
+            if (model.getChessPieceOwner(point).equals(currentPlayer)) {
+                selectedPoint = point;
+                component.setSelected(true);
+
+                //加一个possibleMove
+                showValidMoves(point);
+
+
+                component.repaint();
+            }
+        } else if (selectedPoint.equals(point)) {
+            hideValidMoves();//add
+            selectedPoint = null;
+            component.setSelected(false);
+            component.repaint();
+        } else if(selectedPoint != null) {//改
+            if(model.isTrap(point)){//入
+                model.trapped(selectedPoint);
+                if(!model.isValidCapture(selectedPoint, point)){
+                    model.escape(selectedPoint);
+                }
+            }
+            if(model.isTrap(selectedPoint) && !model.isTrap(point)){//出
+                model.escape(selectedPoint);
+                if(!model.isValidCapture(selectedPoint, point)){
+                    model.trapped(selectedPoint);
+                }
+            }
+            if(model.isValidCapture(selectedPoint, point)){
+                hideValidMoves();//add
+                view.removeChessComponentAtGrid(point);
+                model.captureChessPiece(selectedPoint,point);
+                view.setChessComponentAtGrid(point, view.removeChessComponentAtGrid(selectedPoint));
+                selectedPoint = null;
+                swapColor();
+                model.setTurn(model.getTurn()+1);
+                view.repaint();
+
+                String filepath = "src/music/click.wav";
+                ClickMusic musicObject = new ClickMusic();
+                musicObject.playMusic(filepath);
+
+                if(model.checkWin()!=null){
+                    Win();
+                }
+            }
+        }
+    }
+
+    private List<ChessboardPoint> validMoves;
+    public void showValidMoves(ChessboardPoint point) {
+        validMoves = model.possibleMove(point);
+        view.showValidMoves(validMoves);
+    }
+    public void hideValidMoves() {
+        view.hideValidMoves(validMoves);
     }
 
 }

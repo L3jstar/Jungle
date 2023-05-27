@@ -1,6 +1,6 @@
 package view;
 import controller.GameController;
-
+import model.*;
 import model.Cell;
 import model.ChessPiece;
 import model.Chessboard;
@@ -9,11 +9,8 @@ import view.ChessComponent.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.*;
+import java.util.List;
 import static model.Constant.CHESSBOARD_COL_SIZE;
 import static model.Constant.CHESSBOARD_ROW_SIZE;
 
@@ -38,7 +35,6 @@ public class ChessboardComponent extends JComponent {
     private final Set<ChessboardPoint> catCell = new HashSet<>();
     private final Set<ChessboardPoint> ratCell = new HashSet<>();
 
-//    public JLabel statusLabel;
     public GameController gameController;
 
     public ChessboardComponent(int chessSize) {
@@ -46,7 +42,7 @@ public class ChessboardComponent extends JComponent {
         int width = CHESS_SIZE * 7;
         int height = CHESS_SIZE * 9;
         enableEvents(AWTEvent.MOUSE_EVENT_MASK);// Allow mouse events to occur
-        setLayout(null); // Use absolute layout.
+        setLayout(null);
         setSize(width, height);
         System.out.printf("chessboard width, height = [%d : %d], chess size = %d\n", width, height, CHESS_SIZE);
         initiateGridComponents();
@@ -63,7 +59,6 @@ public class ChessboardComponent extends JComponent {
                 // TODO: Implement the initialization checkerboard
                 if (grid[i][j].getPiece() != null) {
                     ChessPiece chessPiece = grid[i][j].getPiece();
-//                    System.out.println(chessPiece.getOwner());
                     if (chessPiece.getName().equals("Elephant")) {
                         gridComponents[i][j].add(new ElephantChessComponent(chessPiece.getOwner(), CHESS_SIZE));
                     }
@@ -196,9 +191,60 @@ public class ChessboardComponent extends JComponent {
                 System.out.print("One chess here and ");
                 gameController.onPlayerClickChessPiece(getChessboardPoint(e.getPoint()), (ChessComponent) clickedComponent.getComponents()[0]);
             }
+            if(gameController.isAI() && gameController.getCurrentPlayer()== PlayerColor.RED){
+
+                List<ChessboardPoint> AIPoint = new ArrayList<>(gameController.getModel().AI());
+
+                ChessboardPoint src = AIPoint.get(0);
+                ChessboardPoint dest = AIPoint.get(1);
+
+                JComponent AIClicked = getGridComponentAt(src);
+                JComponent AIMove = getGridComponentAt(dest);
+
+                gameController.onPlayerClickChessPiece(src,(ChessComponent) AIClicked.getComponents()[0]);
+
+                if (AIMove.getComponentCount() == 0) {
+                    gameController.onPlayerClickCell(dest, (CellComponent) AIMove);
+                } else {
+                    gameController.onPlayerClickChessPiece(dest, (ChessComponent) AIMove.getComponents()[0]);
+                }
+            }
+
         }
     }
 
+    public void undo(){
+        ArrayList<int[]> step  = new ArrayList<>(gameController.getModel().getSteps());
+        ChessboardPoint point = new ChessboardPoint(step.get(step.size()-1)[3],step.get(step.size()-1)[4]);
+        ChessboardPoint selectedPoint = new ChessboardPoint(step.get(step.size()-1)[5],step.get(step.size()-1)[6]);
+        setChessComponentAtGrid(point, removeChessComponentAtGrid(selectedPoint));
+        if(step.get(step.size()-1)[0]==1){
+            PlayerColor color;
+            if(step.get(step.size()-1)[7]==0){
+                color=PlayerColor.BLUE;
+            }else {
+                color=PlayerColor.RED;
+            }
+            switch (step.get(step.size()-1)[8]){
+                case  1 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new RatChessComponent(color, getCHESS_SIZE()));
+                case  2 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new CatChessComponent(color, getCHESS_SIZE()));
+                case  3 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new DogChessComponent(color, getCHESS_SIZE()));
+                case  4 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new WolfChessComponent(color, getCHESS_SIZE()));
+                case  5 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new LeopardChessComponent(color, getCHESS_SIZE()));
+                case  6 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new TigerChessComponent(color, getCHESS_SIZE()));
+                case  7 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new LionChessComponent(color, getCHESS_SIZE()));
+                case  8 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new ElephantChessComponent(color, getCHESS_SIZE()));
+
+            }
+        }
+        gameController.getModel().Retract();
+        gameController.retractSwapColor();
+        repaint();
+    }
+
+    public int getCHESS_SIZE() {
+        return CHESS_SIZE;
+    }
 
     public GameController getGameController() {
         return gameController;
@@ -206,6 +252,21 @@ public class ChessboardComponent extends JComponent {
 
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
+    }
+
+    public void showValidMoves(List<ChessboardPoint> validMoves) {
+        for (ChessboardPoint validMove : validMoves) {
+            CellComponent cellComponent = getGridComponentAt(validMove);
+            cellComponent.setValidMove(true);
+        }
+        repaint();
+    }
+    public void hideValidMoves(List<ChessboardPoint> validMoves) {
+        for (ChessboardPoint validMove : validMoves) {
+            CellComponent cellComponent = getGridComponentAt(validMove);
+            cellComponent.setValidMove(false);
+        }
+        repaint();
     }
 
 }

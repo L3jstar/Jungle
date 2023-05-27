@@ -4,8 +4,6 @@ package model;
 public class ChessPiece implements Comparable<ChessPiece>{
     // the owner of the chess
     private PlayerColor owner;
-
-    // Elephant? Cat? Dog? ...
     private String name;
     private int rank;
     private  int originRank;
@@ -90,4 +88,5 @@ public class ChessPiece implements Comparable<ChessPiece>{
     public String toString() {
         return rank +String.valueOf(originRank)+ currentPoint.getRow() + currentPoint.getCol() +owner.toString()+name;
     }
+
 }

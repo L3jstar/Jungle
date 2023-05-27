@@ -1,9 +1,7 @@
 package view.ChessComponent;
 
 import model.PlayerColor;
-
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -49,7 +47,7 @@ public class CatChessComponent extends ChessComponent {
                 file=new File("C:\\Users\\罗鑫\\Desktop\\Java\\homework\\src\\project\\src\\picture\\redCat.jpg");
             }
             BufferedImage image= ImageIO.read(file);
-            g.drawImage(image,0,0,getWidth(),getHeight(),null);
+            g.drawImage(image,5,5,getWidth()-10,getHeight()-10,null);
         } catch (IOException e) {
             e.printStackTrace();
         }

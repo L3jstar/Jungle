@@ -39,29 +39,6 @@ public class ElephantChessComponent extends ChessComponent {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-//        ImageIcon picture = new ImageIcon("redElephant.jpg");
-//        if (owner == PlayerColor.BLUE){
-//            picture = new ImageIcon("blueElephant.jpg");
-//        }
-//        Image image = picture.getImage();
-//        picture = new ImageIcon(image.getScaledInstance(size,size,Image.SCALE_SMOOTH));
-//        JLabel label = new JLabel(picture);
-//        label.setSize(size, size);
-//        label.setLocation(0, 0);
-//        add(label);
-
-
-
-//        Image image = Toolkit.getDefaultToolkit().getImage("redElephant.jpg").getScaledInstance(getWidth() , getHeight(), Image.SCALE_FAST);
-//        if (owner == PlayerColor.BLUE){
-//            image = Toolkit.getDefaultToolkit().getImage("blueElephant.jpg").getScaledInstance(getWidth() , getHeight(), Image.SCALE_FAST);
-//        }
-//        JComponent imageComponent = new ImageComponent(image);// create an instance of ImageComponent
-//        imageComponent.setSize(getWidth() , getHeight());// set the size of image component
-//        imageComponent.setLocation(0, 0);
-
-
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);//抗锯齿
 
@@ -71,7 +48,7 @@ public class ElephantChessComponent extends ChessComponent {
                  file=new File("C:\\Users\\罗鑫\\Desktop\\Java\\homework\\src\\project\\src\\picture\\redElephant.jpg");
             }
             BufferedImage image= ImageIO.read(file);
-            g.drawImage(image,0,0,getWidth(),getHeight(),null);
+            g.drawImage(image,5,5,getWidth()-10,getHeight()-10,null);
         } catch (IOException e) {
             e.printStackTrace();
         }
