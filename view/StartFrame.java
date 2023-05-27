@@ -33,14 +33,14 @@ public class StartFrame extends JFrame{
 
         java.util.List<ImageIcon> imageList = new ArrayList<>();
 
-        imageList.add(new ImageIcon("src/picture/6.gif"));
-        imageList.add(new ImageIcon("src/picture/7.gif"));
-        imageList.add(new ImageIcon("src/picture/8.gif"));
-        imageList.add(new ImageIcon("src/picture/9.gif"));
-        imageList.add(new ImageIcon("src/picture/10.gif"));
-        imageList.add(new ImageIcon("src/picture/11.gif"));
-        imageList.add(new ImageIcon("src/picture/12.gif"));
-        imageList.add(new ImageIcon("src/picture/13.gif"));
+        imageList.add(new ImageIcon("src/picture/startFrame1.gif"));
+        imageList.add(new ImageIcon("src/picture/startFrame2.gif"));
+        imageList.add(new ImageIcon("src/picture/startFrame3.gif"));
+        imageList.add(new ImageIcon("src/picture/startFrame4.gif"));
+        imageList.add(new ImageIcon("src/picture/startFrame5.gif"));
+        imageList.add(new ImageIcon("src/picture/startFrame6.gif"));
+        imageList.add(new ImageIcon("src/picture/startFrame7.gif"));
+        imageList.add(new ImageIcon("src/picture/startFrame8.gif"));
 
         JLabel imageLabel = new JLabel(imageList.get(0));
         imageLabel.setBounds(0, 0, 400, 500);
