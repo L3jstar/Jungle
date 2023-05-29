@@ -362,36 +362,25 @@ public class GameController implements GameListener {
             component.setSelected(false);
             component.repaint();
         } else if(selectedPoint != null) {//改
-            if(model.isTrap(point)){//入
-                model.trapped(selectedPoint);
-                if(!model.isValidCapture(selectedPoint, point)){
-                    model.escape(selectedPoint);
-                }
-            }
-            if(model.isTrap(selectedPoint) && !model.isTrap(point)){//出
-                model.escape(selectedPoint);
-                if(!model.isValidCapture(selectedPoint, point)){
-                    model.trapped(selectedPoint);
-                }
-            }
             if(model.isValidCapture(selectedPoint, point)){
-                hideValidMoves();//add
+                hideValidMoves();
                 view.removeChessComponentAtGrid(point);
                 model.captureChessPiece(selectedPoint,point);
                 view.setChessComponentAtGrid(point, view.removeChessComponentAtGrid(selectedPoint));
+                if(model.isTrap(point)){//入
+                    model.trapped(point);
+                }
                 selectedPoint = null;
                 swapColor();
-                model.setTurn(model.getTurn()+1);
                 view.repaint();
-
                 String filepath = "src/music/click.wav";
                 ClickMusic musicObject = new ClickMusic();
                 musicObject.playMusic(filepath);
-
                 if(model.checkWin()!=null){
                     Win();
                 }
             }
+
         }
     }
 

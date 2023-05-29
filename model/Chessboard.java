@@ -265,6 +265,15 @@ public class Chessboard {
                 (getChessPieceAt(src).getOwner().equals(PlayerColor.BLUE) && dest.getCol()==3 && dest.getRow()==0);
     }
     public boolean specialMove(ChessboardPoint src, ChessboardPoint dest){//行棋方法，不考虑是否capture
+        if(getChessPieceAt(src).getOwner().equals(PlayerColor.BLUE)){
+            if(dest.getRow()==8 && dest.getCol()==3){
+                return false;
+            }
+        } else {
+            if(dest.getRow()==0 && dest.getCol()==3){
+                return false;
+            }
+        }
         if(getChessPieceAt(src).getName().equals("Rat")){
             return calculateDistance(src, dest) == 1;//控制棋子只能上下左右移动
         }//老鼠的移动方式（可以下河）
@@ -324,8 +333,24 @@ public class Chessboard {
             return false;
         }//河里的rat不能被岸上动物吃
 
+        //关于trap,被trap的同时不能吃
+//        if(isTrap(dest)){//走进trap
+//            trapped(src);
+//            if(getChessPieceAt(src).getOriginRank()!=getChessPieceAt(src).getRank()){//成功被trap
+//                escape(src);
+//                return false;
+//            }
+//        }
+        if(isTrap(src) && !isTrap(dest)){//出去rank正常
+            escape(src);
+            if(!getChessPieceAt(src).canCapture(getChessPieceAt(dest))){
+                trapped(src);
+                return false;
+            }
+        }
         return getChessPieceAt(src).canCapture(getChessPieceAt(dest));
     }
+
     public  static List<ChessboardPoint> possiblePoints = new ArrayList<>();
     public List<ChessboardPoint> possibleMove(ChessboardPoint point){//可能的移动point
 
