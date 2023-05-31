@@ -226,16 +226,15 @@ public class ChessboardComponent extends JComponent {
                 color=PlayerColor.RED;
             }
             switch (step.get(step.size()-1)[8]){
-                case  1 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new RatChessComponent(color, getCHESS_SIZE()));
-                case  2 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new CatChessComponent(color, getCHESS_SIZE()));
-                case  3 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new DogChessComponent(color, getCHESS_SIZE()));
-                case  4 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new WolfChessComponent(color, getCHESS_SIZE()));
-                case  5 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new LeopardChessComponent(color, getCHESS_SIZE()));
-                case  6 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new TigerChessComponent(color, getCHESS_SIZE()));
-                case  7 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new LionChessComponent(color, getCHESS_SIZE()));
-                case  8 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new ElephantChessComponent(color, getCHESS_SIZE()));
-
-            }
+                case  1 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new RatChessComponent(color, getCHESS_SIZE()));     break;
+                case  2 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new CatChessComponent(color, getCHESS_SIZE()));     break;
+                case  3 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new DogChessComponent(color, getCHESS_SIZE()));     break;
+                case  4 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new WolfChessComponent(color, getCHESS_SIZE()));    break;
+                case  5 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new LeopardChessComponent(color, getCHESS_SIZE())); break;
+                case  6 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new TigerChessComponent(color, getCHESS_SIZE()));   break;
+                case  7 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new LionChessComponent(color, getCHESS_SIZE()));    break;
+                case  8 :gridComponents[step.get(step.size()-1)[5]][step.get(step.size()-1)[6]].add(new ElephantChessComponent(color, getCHESS_SIZE()));break;
+            }//这个是今天早上提到的那个多图片BUG
         }
         gameController.getModel().Retract();
         gameController.retractSwapColor();

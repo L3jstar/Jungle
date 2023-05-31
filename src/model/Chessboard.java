@@ -483,8 +483,9 @@ public class Chessboard {
         getChessPieceAt(src).setCurrentPoint(src);
         if(isTrap(src)){
             trapped(src);
-        }
-
+        } else {
+            escape(src);
+        }//最后的BUG
         if(steps.get(steps.size()-1)[0]==1){//吃子
             String name=null;
             PlayerColor color;
