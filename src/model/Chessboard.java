@@ -489,14 +489,14 @@ public class Chessboard {
             String name=null;
             PlayerColor color;
             switch (steps.get(steps.size()-1)[8]){
-                case 1: name = "Elephant"; break;
-                case 2: name = "Lion"    ; break;
-                case 3: name = "Tiger"   ; break;
-                case 4: name = "Leopard" ; break;
-                case 5: name = "Wolf"    ; break;
-                case 6: name = "Dog"     ; break;
-                case 7: name = "Cat"     ; break;
-                case 8: name = "Rat"     ; break;
+                case 8: name = "Elephant"; break;
+                case 7: name = "Lion"    ; break;
+                case 6: name = "Tiger"   ; break;
+                case 5: name = "Leopard" ; break;
+                case 4: name = "Wolf"    ; break;
+                case 3: name = "Dog"     ; break;
+                case 2: name = "Cat"     ; break;
+                case 1: name = "Rat"     ; break;
             }
             if (steps.get(steps.size()-1)[7]==0){
                 color = PlayerColor.BLUE;

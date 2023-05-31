@@ -1,5 +1,4 @@
 package view.ChessComponent;
-
 import model.PlayerColor;
 import javax.imageio.ImageIO;
 import java.awt.*;
